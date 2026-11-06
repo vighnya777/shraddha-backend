@@ -1,7 +1,10 @@
 import secrets
 from functools import wraps
-from flask import current_app, jsonify, request
+
+from flask import jsonify, request
+
 from app.core.config import get_settings
+
 
 def require_app_token(view):
     @wraps(view)
@@ -14,8 +17,7 @@ def require_app_token(view):
                 return view(*args, **kwargs)
             return jsonify(error="Backend authentication is not configured"), 503
         supplied = request.headers.get("Authorization", "")
-        if supplied.startswith("Bearer "):
-            supplied = supplied[7:]
+        supplied = supplied.removeprefix("Bearer ")
         if not secrets.compare_digest(supplied, expected):
             return jsonify(error="Invalid app token"), 401
         return view(*args, **kwargs)

@@ -31,7 +31,7 @@ assistant output or after a tool has executed, to avoid duplicate actions.
 python -m venv .venv
 # Windows: .venv\\Scripts\\activate
 # macOS/Linux: source .venv/bin/activate
-pip install -e '.[test]'
+pip install -r requirements.txt
 cp .env.example .env
 # Set AI_API_KEY and SHRADDHA_API_TOKEN in .env
 flask --app app.main run --debug
@@ -93,7 +93,7 @@ secret rotation and operational monitoring.
 ## Tests
 
 ```bash
-pip install -e '.[test]'
+pip install -r requirements.txt
 ruff check app tests
 pytest -q
 ```

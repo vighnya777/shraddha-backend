@@ -1,7 +1,9 @@
 from flask import Blueprint, jsonify
+
 from app.core.config import get_settings
 
 health_bp = Blueprint("health", __name__)
+
 
 @health_bp.get("/health")
 def health():

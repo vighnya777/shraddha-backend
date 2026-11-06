@@ -1,8 +1,10 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
-from app.core.config import get_settings
-from app.api.routes.health import health_bp
+
 from app.api.routes.chat import chat_bp
+from app.api.routes.health import health_bp
+from app.core.config import get_settings
+
 
 def create_app(test_config: dict | None = None) -> Flask:
     cfg = get_settings()

@@ -1,6 +1,8 @@
 import httpx
 from flask import Response, jsonify, stream_with_context
+
 from app.core.config import get_settings
+
 
 def _provider_headers(stream: bool = False) -> dict[str, str]:
     cfg = get_settings()
