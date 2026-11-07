@@ -24,9 +24,22 @@ def create_app(test_config: dict | None = None) -> Flask:
     app.register_blueprint(health_bp)
     app.register_blueprint(chat_bp)
 
+    @app.errorhandler(404)
+    def not_found(_error):
+        return jsonify(error="Not found"), 404
+
+    @app.errorhandler(405)
+    def method_not_allowed(_error):
+        return jsonify(error="Method not allowed"), 405
+
     @app.errorhandler(413)
     def request_too_large(_error):
         return jsonify(error="Request body is too large"), 413
+
+    @app.errorhandler(500)
+    def internal_error(_error):
+        # Never leak stack traces or provider details to clients.
+        return jsonify(error="Internal server error"), 500
 
     return app
 
