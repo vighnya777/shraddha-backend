@@ -65,6 +65,6 @@ def get_settings() -> Settings:
         allow_client_model=_as_bool(os.getenv("ALLOW_CLIENT_MODEL"), False),
         connect_timeout_seconds=_as_float("CONNECT_TIMEOUT_SECONDS", 10.0),
         request_timeout_seconds=_as_float("REQUEST_TIMEOUT_SECONDS", 90.0),
-        max_request_bytes=_as_int("MAX_REQUEST_BYTES", 1048576, minimum=1024),
+        max_request_bytes=_as_int("MAX_REQUEST_BYTES", 4194304, minimum=1024),
         allowed_origins=origins,
     )

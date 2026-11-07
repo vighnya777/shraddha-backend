@@ -10,6 +10,10 @@ ALLOWED_FIELDS = {
 }
 
 ALLOWED_ROLES = {"system", "user", "assistant", "tool", "developer"}
+# Image inputs: only inline base64 images in common formats (the app always sends this form).
+ALLOWED_IMAGE_PREFIXES = ("data:image/jpeg;base64,", "data:image/png;base64,",
+                          "data:image/webp;base64,", "data:image/gif;base64,")
+MAX_IMAGE_DATA_URL_CHARS = 3 * 1024 * 1024  # ~2.2 MB of image data after base64
 ALLOWED_TOOL_CHOICE_STRINGS = {"auto", "none", "required"}
 MAX_MESSAGES = 100
 MAX_TOOLS = 128
@@ -28,7 +32,43 @@ def _validate_messages(messages: Any) -> str | None:
         tool_calls = item.get("tool_calls")
         if tool_calls is not None and not isinstance(tool_calls, list):
             return f"messages[{index}].tool_calls must be a list"
+        content = item.get("content")
+        if isinstance(content, list):
+            error = _validate_content_parts(content, index)
+            if error:
+                return error
     return None
+
+
+def _validate_content_parts(parts: list, index: int) -> str | None:
+    for part_index, part in enumerate(parts):
+        if not isinstance(part, dict):
+            return f"messages[{index}].content[{part_index}] must be an object"
+        kind = part.get("type")
+        if kind == "text":
+            if not isinstance(part.get("text"), str):
+                return f"messages[{index}].content[{part_index}].text must be a string"
+        elif kind == "image_url":
+            url = (part.get("image_url") or {}).get("url") if isinstance(part.get("image_url"), dict) else None
+            if not isinstance(url, str) or not url.startswith(ALLOWED_IMAGE_PREFIXES):
+                return ("Images must be sent as base64 JPEG, PNG, WebP or GIF "
+                        f"(messages[{index}].content[{part_index}]).")
+            if len(url) > MAX_IMAGE_DATA_URL_CHARS:
+                return f"Image is too large (messages[{index}].content[{part_index}]). Send a smaller image."
+        else:
+            return f"messages[{index}].content[{part_index}].type must be 'text' or 'image_url'"
+    return None
+
+
+def contains_images(payload: dict) -> bool:
+    """True when any message carries an image_url content part."""
+    for item in payload.get("messages") or []:
+        content = item.get("content") if isinstance(item, dict) else None
+        if isinstance(content, list) and any(
+            isinstance(part, dict) and part.get("type") == "image_url" for part in content
+        ):
+            return True
+    return False
 
 
 def _validate_tools(tools: Any) -> str | None:

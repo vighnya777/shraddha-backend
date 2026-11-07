@@ -90,7 +90,7 @@ environment a missing `SHRADDHA_API_TOKEN` makes `/api/v1/chat` return 503 inste
 | `ALLOW_CLIENT_MODEL` | Let clients override `model` | `false` |
 | `CONNECT_TIMEOUT_SECONDS` | Upstream connect timeout | `10` |
 | `REQUEST_TIMEOUT_SECONDS` | Upstream read timeout | `90` |
-| `MAX_REQUEST_BYTES` | Max request body | `1048576` |
+| `MAX_REQUEST_BYTES` | Max request body (room for one base64 photo) | `4194304` |
 | `ALLOWED_ORIGINS` | CORS origins (comma-separated) | `*` |
 
 Switching provider = change `AI_BASE_URL`, `AI_API_KEY`, `AI_MODEL` (any OpenAI-compatible
