@@ -5,6 +5,9 @@ services:
     ports:
       - "8000:8000"
     restart: unless-stopped
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
       interval: 30s
